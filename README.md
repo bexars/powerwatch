@@ -4,6 +4,9 @@ Watch OS power and session events on a Rust channel. `PowerWatch::start()` is sa
 
 Keep the returned `PowerWatch` alive. Dropping it unsubscribes; the last instance in the process stops the shared OS runtime.
 
+## AI Disclaimer
+This was 99% coded by Grok 4.6 using the attached plan.md that I worked with Grok to create in the first place after discussion
+
 ## Events
 
 | Event | Meaning |
