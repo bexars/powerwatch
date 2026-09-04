@@ -1,7 +1,5 @@
-use std::sync::mpsc::Receiver;
-
 use crate::error::Error;
-use crate::event::PowerEvent;
+use crate::events::Events;
 use crate::platform;
 
 /// Handle that keeps OS power/session watching alive.
@@ -22,10 +20,14 @@ impl PowerWatch {
     /// Start watching OS power and session events.
     ///
     /// Returns only after the platform backend has registered (or failed).
-    /// Each call gets a dedicated [`Receiver`]; there is no process-global
+    /// Each call gets a dedicated [`Events`]; there is no process-global
     /// event channel.
-    pub fn start() -> Result<(Self, Receiver<PowerEvent>), Error> {
+    ///
+    /// `start` itself is synchronous. The returned [`Events`] can be used from
+    /// a blocking thread (`recv` / `try_recv`) or awaited (`recv_async` /
+    /// [`futures_core::Stream`]) without this crate starting a runtime.
+    pub fn start() -> Result<(Self, Events), Error> {
         let (imp, rx) = platform::start()?;
-        Ok((Self { _imp: imp }, rx))
+        Ok((Self { _imp: imp }, Events::from_flume(rx)))
     }
 }

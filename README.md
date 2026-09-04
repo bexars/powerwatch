@@ -19,11 +19,11 @@ Events are **transitions only**. Starting a watcher does not emit the current lo
 ## Example
 
 ```rust
-use std::sync::mpsc::TryRecvError;
+use powerwatch::TryRecvError;
 
-let (_watch, rx) = powerwatch::PowerWatch::start()?;
+let (_watch, events) = powerwatch::PowerWatch::start()?;
 loop {
-    match rx.try_recv() {
+    match events.try_recv() {
         Ok(ev) => println!("{ev:?}"),
         Err(TryRecvError::Empty) => {}
         Err(TryRecvError::Disconnected) => break,
@@ -33,6 +33,34 @@ loop {
 ```
 
 Do not drain the channel on the OS worker. `try_recv` belongs on your thread.
+
+`Events` also supports async without a crate-provided runtime: `recv_async` and `futures_core::Stream`. This crate does not depend on Tokio. See `examples/watch_tokio.rs` (`cargo run --example watch_tokio`).
+
+```rust
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut task = tokio::spawn(async {
+        let (_watch, events) = powerwatch::PowerWatch::start()?;
+        loop {
+            match events.recv_async().await {
+                Ok(ev) => println!("{ev:?}"),
+                Err(_) => break,
+            }
+        }
+        Ok::<_, powerwatch::Error>(())
+    });
+
+    tokio::select! {
+        result = &mut task => {
+            result??;
+        }
+        _ = tokio::signal::ctrl_c() => {
+            task.abort();
+        }
+    }
+    Ok(())
+}
+```
 
 ## Platforms
 
@@ -47,7 +75,7 @@ Multiple `PowerWatch` instances in one process share a single platform runtime a
 
 ### macOS
 
-Sleep is acknowledged with `IOAllowPowerChange` immediately. This crate does **not** delay sleep. After a sleep cycle, `pmset -g log` should not contain `power timed out(30000 ms)` for your process.
+Sleep is acknowledged with `IOAllowPowerChange` immediately. This crate does **not** delay sleep. After a sleep cycle, `pmset -g log` should not contain `<program> timed out(30000 ms)` for your process.
 
 ### Linux
 

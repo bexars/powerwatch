@@ -3,11 +3,11 @@
 //! `IORegisterForSystemPower` does not deliver shutdown/restart, so
 //! [`PowerEvent::Shutdown`] is never emitted here.
 
+use flume::{Receiver, Sender};
 use std::collections::HashMap;
 use std::ffi::{CStr, c_int, c_void};
 use std::ptr::NonNull;
 use std::sync::atomic::{AtomicI32, AtomicPtr, AtomicU32, AtomicU64, Ordering};
-use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 
 use block2::{Block, RcBlock};
@@ -56,7 +56,7 @@ unsafe extern "C" {
 }
 
 pub(crate) fn start() -> Result<(Watch, Receiver<PowerEvent>), Error> {
-    let (tx, rx) = mpsc::channel();
+    let (tx, rx) = flume::unbounded();
     let watch = subscribe(tx)?;
     Ok((watch, rx))
 }

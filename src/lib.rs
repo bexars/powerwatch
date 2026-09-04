@@ -5,17 +5,17 @@
 
 mod error;
 mod event;
+mod events;
 mod platform;
 mod watch;
 
 pub use error::Error;
 pub use event::PowerEvent;
+pub use events::{Events, RecvError, TryRecvError};
 pub use watch::PowerWatch;
 
 #[cfg(all(test, target_os = "macos"))]
 mod tests {
-    use std::sync::mpsc::TryRecvError;
-
     use super::*;
 
     #[test]

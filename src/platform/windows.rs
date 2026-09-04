@@ -1,6 +1,6 @@
 //! Windows backend (message-only window) — not implemented yet.
 
-use std::sync::mpsc::Receiver;
+use flume::Receiver;
 
 use crate::error::Error;
 use crate::event::PowerEvent;

@@ -9,6 +9,11 @@ keywords = ["power", "sleep", "suspend", "session"]
 categories = ["os"]
 
 [dependencies]
+flume = { version = "0.11", default-features = false, features = ["async"] }
+futures-core = { version = "0.3", default-features = false }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 block2 = "0.6.1"

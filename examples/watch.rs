@@ -1,9 +1,9 @@
-use std::sync::mpsc::TryRecvError;
+use powerwatch::TryRecvError;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let (_watch, rx) = powerwatch::PowerWatch::start()?;
+    let (_watch, events) = powerwatch::PowerWatch::start()?;
     loop {
-        match rx.try_recv() {
+        match events.try_recv() {
             Ok(ev) => println!("{ev:?}"),
             Err(TryRecvError::Empty) => {}
             Err(TryRecvError::Disconnected) => break,
