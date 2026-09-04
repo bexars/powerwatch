@@ -1,0 +1,21 @@
+[package]
+name = "powerwatch"
+version = "0.1.0"
+edition = "2024"
+description = "Watch OS power and session events without a GUI event loop"
+repository = "https://github.com/bradbury/powermonitor"
+readme = "README.md"
+keywords = ["power", "sleep", "suspend", "session"]
+categories = ["os"]
+
+[dependencies]
+
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6.1"
+dispatch2 = { version = "0.3.1", features = ["block2"] }
+objc2-io-kit = { version = "0.3.2", default-features = false, features = [
+    "std",
+    "libc",
+    "pwr_mgt",
+    "dispatch2",
+] }
