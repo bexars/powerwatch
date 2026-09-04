@@ -7,6 +7,7 @@ repository = "https://github.com/bradbury/powermonitor"
 readme = "README.md"
 keywords = ["power", "sleep", "suspend", "session"]
 categories = ["os"]
+license = "MIT"
 
 [dependencies]
 flume = { version = "0.11", default-features = false, features = ["async"] }
